@@ -25,14 +25,15 @@ func main() {
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
-
 	render.NewTemplates(&app)
 
-	http.HandleFunc("/", handlers.Repo.Home)
-	http.HandleFunc("/about", handlers.Repo.About)
-
 	fmt.Printf("Starting application on localhost:%s", portNumber)
-	_ = http.ListenAndServe(":"+portNumber, nil)
+	srv := &http.Server{
+		Addr:    ":" + portNumber,
+		Handler: routes(&app),
+	}
+	err = srv.ListenAndServe()
+	log.Fatal(err)
 }
 
 // command to generate go.mod file
