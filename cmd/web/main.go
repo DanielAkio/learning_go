@@ -39,5 +39,7 @@ func main() {
 // command to generate go.mod file
 // go mod init github.com/DanielAkio/go-course
 
-// command to run
+// commands
 // go run ./cmd/web
+// go get -u github.com/go-chi/chi/v5
+// go mod tidy
