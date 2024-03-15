@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/DanielAkio/go-course/pkg/config"
-	"github.com/DanielAkio/go-course/pkg/models"
+	"github.com/DanielAkio/learning_go/pkg/config"
+	"github.com/DanielAkio/learning_go/pkg/models"
 )
 
 var app *config.AppConfig

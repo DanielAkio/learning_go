@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/DanielAkio/go-course/pkg/config"
-	"github.com/DanielAkio/go-course/pkg/models"
-	"github.com/DanielAkio/go-course/pkg/render"
+	"github.com/DanielAkio/learning_go/pkg/config"
+	"github.com/DanielAkio/learning_go/pkg/models"
+	"github.com/DanielAkio/learning_go/pkg/render"
 )
 
 var Repo *Repository

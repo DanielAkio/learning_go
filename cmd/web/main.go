@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/DanielAkio/go-course/pkg/config"
-	"github.com/DanielAkio/go-course/pkg/handlers"
-	"github.com/DanielAkio/go-course/pkg/render"
+	"github.com/DanielAkio/learning_go/pkg/config"
+	"github.com/DanielAkio/learning_go/pkg/handlers"
+	"github.com/DanielAkio/learning_go/pkg/render"
 )
 
 const portNumber = "8080"
