@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/DanielAkio/learning_go/pkg/config"
-	"github.com/DanielAkio/learning_go/pkg/models"
-	"github.com/DanielAkio/learning_go/pkg/render"
+	"github.com/DanielAkio/learning_go/internal/config"
+	"github.com/DanielAkio/learning_go/internal/models"
+	"github.com/DanielAkio/learning_go/internal/render"
 )
 
 var Repo *Repository

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/DanielAkio/learning_go/pkg/config"
-	"github.com/DanielAkio/learning_go/pkg/models"
+	"github.com/DanielAkio/learning_go/internal/config"
+	"github.com/DanielAkio/learning_go/internal/models"
 	"github.com/justinas/nosurf"
 )
 

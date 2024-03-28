@@ -3,8 +3,8 @@ package main
 import (
 	"net/http"
 
-	"github.com/DanielAkio/learning_go/pkg/config"
-	"github.com/DanielAkio/learning_go/pkg/handlers"
+	"github.com/DanielAkio/learning_go/internal/config"
+	"github.com/DanielAkio/learning_go/internal/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )

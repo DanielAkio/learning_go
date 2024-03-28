@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/DanielAkio/learning_go/pkg/config"
-	"github.com/DanielAkio/learning_go/pkg/handlers"
-	"github.com/DanielAkio/learning_go/pkg/render"
+	"github.com/DanielAkio/learning_go/internal/config"
+	"github.com/DanielAkio/learning_go/internal/handlers"
+	"github.com/DanielAkio/learning_go/internal/render"
 	"github.com/alexedwards/scs/v2"
 )
 
