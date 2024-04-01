@@ -11,17 +11,23 @@
             <form method="post" action="" class="" novalidate>
             <!-- <form method="post" action="" class="needs-validation" novalidate> -->
                 <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                <div class="form-group mt-3">
-                    <label for="first_name">First Name:</label>
-                    {{with .Form.Errors.Get "first_name"}}<label class="text-danger">{{.}}</label>{{end}}
-                    <input class="form-control {{with .Form.Errors.Get "first_name"}}is-invalid{{end}}" id="first_name" autocomplete="off" type='text' name='first_name'
-                        value="{{$res.FirstName}}" required>
-                </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name:</label>
-                    {{with .Form.Errors.Get "last_name"}}<label class="text-danger">{{.}}</label>{{end}}
-                    <input class="form-control {{with .Form.Errors.Get "last_name"}}is-invalid{{end}}" id="last_name" autocomplete="off" type='text' name='last_name' value="{{$res.LastName}}"
-                        required>
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="first_name">First Name:</label>
+                            {{with .Form.Errors.Get "first_name"}}<label class="text-danger">{{.}}</label>{{end}}
+                            <input class="form-control {{with .Form.Errors.Get "first_name"}}is-invalid{{end}}" id="first_name" autocomplete="off" type='text' name='first_name'
+                                value="{{$res.FirstName}}" required>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="last_name">Last Name:</label>
+                            {{with .Form.Errors.Get "last_name"}}<label class="text-danger">{{.}}</label>{{end}}
+                            <input class="form-control {{with .Form.Errors.Get "last_name"}}is-invalid{{end}}" id="last_name" autocomplete="off" type='text' name='last_name' value="{{$res.LastName}}"
+                                required>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>

@@ -30,6 +30,7 @@ func routes(_ *config.AppConfig) http.Handler {
 
 	mux.Get("/make-reservation", http.HandlerFunc(handlers.Repo.Reservation))
 	mux.Post("/make-reservation", http.HandlerFunc(handlers.Repo.PostReservation))
+	mux.Get("/reservation-summary", http.HandlerFunc(handlers.Repo.ReservationSummary))
 
 	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
