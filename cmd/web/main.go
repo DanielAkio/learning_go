@@ -20,6 +20,21 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Starting application on localhost:%s", portNumber)
+	srv := &http.Server{
+		Addr:    ":" + portNumber,
+		Handler: routes(&app),
+	}
+	err = srv.ListenAndServe()
+	log.Fatal(err)
+}
+
+func run() error {
 	gob.Register(models.Reservation{})
 
 	app.InProduction = false
@@ -35,6 +50,7 @@ func main() {
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
+		return err
 	}
 
 	app.TemplateCache = tc
@@ -44,19 +60,19 @@ func main() {
 	handlers.NewHandlers(repo)
 	render.NewTemplates(&app)
 
-	fmt.Printf("Starting application on localhost:%s", portNumber)
-	srv := &http.Server{
-		Addr:    ":" + portNumber,
-		Handler: routes(&app),
-	}
-	err = srv.ListenAndServe()
-	log.Fatal(err)
+	return nil
 }
 
 // command to generate go.mod file
 // go mod init github.com/DanielAkio/go-course
 
-// commands
+// command to install and remove not used packages
 // go run ./cmd/web
-// go get -u github.com/go-chi/chi/v5
+// go get -u github.com/go-chi/chi
 // go mod tidy
+
+// command to run test
+// go test -v ./...
+// go test -cover ./...
+// go test -coverprofile=coverage.out ./...
+// go tool cover -html=coverage.out

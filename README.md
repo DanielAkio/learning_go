@@ -6,3 +6,10 @@ This is the repository for my bookings and reservations project.
 - Uses the [Chi Router](https://github.com/go-chi/chi/v5)
 - Uses [Alex Edwards SCS](https://github.com/alexedwards/scs/v2) session management
 - Uses [NoSurf](https://github.com/justinas/nosurf)
+
+## Running Local
+
+- Git Bash
+  - `./run.sh`
+- Powershell
+  - `./run.bat`
