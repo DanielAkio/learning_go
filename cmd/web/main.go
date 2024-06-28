@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/DanielAkio/learning_go/driver"
 	"github.com/DanielAkio/learning_go/internal/config"
 	"github.com/DanielAkio/learning_go/internal/handlers"
 	"github.com/DanielAkio/learning_go/internal/models"
@@ -20,12 +21,13 @@ var app config.AppConfig
 var session *scs.SessionManager
 
 func main() {
-	err := run()
+	db, err := run()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer db.SQL.Close()
 
-	fmt.Printf("Starting application on localhost:%s", portNumber)
+	fmt.Printf("Starting application on localhost:%s\n\n", portNumber)
 	srv := &http.Server{
 		Addr:    ":" + portNumber,
 		Handler: routes(&app),
@@ -34,8 +36,12 @@ func main() {
 	log.Fatal(err)
 }
 
-func run() error {
+func run() (*driver.DB, error) {
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 	gob.Register(models.Reservation{})
+	gob.Register(models.RoomRestriction{})
 
 	app.InProduction = false
 
@@ -47,20 +53,27 @@ func run() error {
 
 	app.Session = session
 
+	log.Println("Connection to database...")
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=admin password=admin")
+	if err != nil {
+		log.Fatal("cannot connect to database! Dying...")
+	}
+	log.Println("Connected to database")
+
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
-		log.Fatal("cannot create template cache")
-		return err
+		log.Fatal("Cannot create template cache")
+		return nil, err
 	}
 
 	app.TemplateCache = tc
 	app.UseCache = false
 
-	repo := handlers.NewRepo(&app)
+	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 
-	return nil
+	return db, nil
 }
 
 // command to generate go.mod file
