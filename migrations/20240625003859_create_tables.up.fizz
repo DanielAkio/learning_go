@@ -9,7 +9,7 @@ create_table("users") {
 
 create_table("rooms") {
     t.Column("id", "integer", {"primary": true})
-    t.Column("room_name", "string", {"default": ""})
+    t.Column("name", "string", {"default": ""})
 }
 
 create_table("reservations") {
@@ -33,6 +33,6 @@ create_table("room_restrictions") {
     t.Column("start_date", "date", {})
     t.Column("end_date", "date", {})
     t.Column("room_id", "integer", {})
-    t.Column("reservation_id", "integer", {})
+    t.Column("reservation_id", "integer", {"null": true})
     t.Column("restriction_id", "integer", {})
 }

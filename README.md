@@ -12,6 +12,7 @@ This is the repository for my bookings and reservations project.
 - ```soda generate fizz <migration_name>```
 - ```soda migrate```
 - ```soda migrate down -s <number_of_migrations>```
+- ```soda reset``` runs migrate down and up
 
 ## Go commands
 - ```go get <lib_path>``` install libs
