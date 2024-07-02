@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/DanielAkio/learning_go/driver"
 	"github.com/DanielAkio/learning_go/internal/config"
 	"github.com/DanielAkio/learning_go/internal/handlers"
+	"github.com/DanielAkio/learning_go/internal/helpers"
 	"github.com/DanielAkio/learning_go/internal/models"
 	"github.com/DanielAkio/learning_go/internal/render"
 	"github.com/alexedwards/scs/v2"
@@ -19,6 +21,8 @@ const portNumber = "8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 func main() {
 	db, err := run()
@@ -45,12 +49,17 @@ func run() (*driver.DB, error) {
 
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
 	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Secure = app.InProduction
-
 	app.Session = session
 
 	log.Println("Connection to database...")
@@ -72,6 +81,7 @@ func run() (*driver.DB, error) {
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 	render.NewRenderer(&app)
+	helpers.NewHelpers(&app)
 
 	return db, nil
 }

@@ -116,7 +116,7 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 	stmt := `
 		SELECT
 			r.id,
-			r.room_name
+			r.name
 		FROM
 			rooms AS r
 		WHERE

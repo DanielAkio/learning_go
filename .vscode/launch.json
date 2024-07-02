@@ -1,0 +1,15 @@
+// Ctrl + Shift + P -> Go: Install/Update Tools -> Select all -> OK
+{
+    "configurations": [
+        {
+            "name": "Debug Server",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/web",
+            "env": {},
+            "args": [],
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}
