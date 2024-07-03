@@ -17,14 +17,14 @@ func (m *postgresDBRepo) InsertReservation(re models.Reservation) (int, error) {
 
 	var newID int
 
-	stmt := `
+	query := `
 		INSERT INTO reservations (first_name, last_name, email, phone, start_date, end_date, room_id, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) returning id
 	`
 
 	row := m.DB.QueryRowContext(
 		ctx,
-		stmt,
+		query,
 		re.FirstName,
 		re.LastName,
 		re.Email,
@@ -48,14 +48,14 @@ func (m *postgresDBRepo) InsertRoomRestriction(rr models.RoomRestriction) error 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	stmt := `
+	query := `
 		INSERT INTO room_restrictions (start_date, end_date, room_id, reservation_id, created_at, updated_at, restriction_id)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
 	_, err := m.DB.ExecContext(
 		ctx,
-		stmt,
+		query,
 		rr.StartDate,
 		rr.EndDate,
 		rr.RoomID,
@@ -75,7 +75,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDatesAndRoomID(roomID int, start, e
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	stmt := `
+	query := `
 		SELECT
 			COUNT(1)
 		FROM
@@ -89,7 +89,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDatesAndRoomID(roomID int, start, e
 
 	row := m.DB.QueryRowContext(
 		ctx,
-		stmt,
+		query,
 		roomID,
 		start,
 		end,
@@ -113,7 +113,7 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 
 	var rooms []models.Room
 
-	stmt := `
+	query := `
 		SELECT
 			r.id,
 			r.name
@@ -132,7 +132,7 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 
 	rows, err := m.DB.QueryContext(
 		ctx,
-		stmt,
+		query,
 		start,
 		end,
 	)
@@ -153,4 +153,34 @@ func (m *postgresDBRepo) SearchAvailabilityForAllRooms(start, end time.Time) ([]
 	}
 
 	return rooms, nil
+}
+
+func (m *postgresDBRepo) GetRoomByID(id int) (models.Room, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	var room models.Room
+	query := `
+		select
+			id,
+			name,
+			created_at,
+			updated_at
+		from rooms
+		where id = $1
+	`
+
+	row := m.DB.QueryRowContext(ctx, query, id)
+	err := row.Scan(
+		&room.ID,
+		&room.Name,
+		&room.CreatedAt,
+		&room.UpdatedAt,
+	)
+
+	if err != nil {
+		return room, err
+	}
+
+	return room, nil
 }
