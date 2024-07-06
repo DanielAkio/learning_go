@@ -81,7 +81,7 @@ func (m *postgresDBRepo) SearchAvailabilityByDatesAndRoomID(roomID int, start, e
 		FROM
 			room_restrictions
 		WHERE 1=1
-			AND room_id = $1;
+			AND room_id = $1
 			AND $2 < end_date AND $3 > start_date
 	`
 
