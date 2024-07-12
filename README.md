@@ -18,6 +18,8 @@ This is the repository for my bookings and reservations project.
 - ```go get <lib_path>``` install libs
 - ```go mod tidy``` remove unused libs
 - ```go test -v ./...```
+- ```go test -coverprofile=coverage.out && go tool cover -html=coverage.out``` coverage 1 file
+- ```go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out``` coverage all files
 
 ## Running Local
 

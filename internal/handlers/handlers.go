@@ -33,6 +33,13 @@ func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	}
 }
 
+func NewTestRepo(a *config.AppConfig) *Repository {
+	return &Repository{
+		App: a,
+		DB:  dbrepo.NewTestingRepo(a),
+	}
+}
+
 func NewHandlers(r *Repository) {
 	Repo = r
 }
@@ -55,6 +62,42 @@ func (m *Repository) Majors(w http.ResponseWriter, r *http.Request) {
 
 func (m *Repository) Availability(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "search-availability.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
+	res, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		m.App.Session.Put(r.Context(), "error", "can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	room, err := m.DB.GetRoomByID(res.RoomID)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't find room")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	res.Room.Name = room.Name
+
+	m.App.Session.Put(r.Context(), "reservation", res)
+
+	sd := res.StartDate.Format("2006-01-02")
+	ed := res.EndDate.Format("2006-01-02")
+
+	stringMap := make(map[string]string)
+	stringMap["start_date"] = sd
+	stringMap["end_date"] = ed
+
+	data := make(map[string]interface{})
+	data["reservation"] = res
+
+	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form:      forms.New(nil),
+		Data:      data,
+		StringMap: stringMap,
+	})
 }
 
 func (m *Repository) PostAvailability(w http.ResponseWriter, r *http.Request) {
@@ -146,50 +189,18 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.Template(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
 
-func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	res, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
-	if !ok {
-		helpers.ServerError(w, errors.New("can't get reservation from session"))
-		return
-	}
-
-	room, err := m.DB.GetRoomByID(res.RoomID)
-	if err != nil {
-		helpers.ServerError(w, err)
-		return
-	}
-
-	res.Room.Name = room.Name
-
-	m.App.Session.Put(r.Context(), "reservation", res)
-
-	sd := res.StartDate.Format("2006-01-02")
-	ed := res.StartDate.Format("2006-01-02")
-
-	stringMap := make(map[string]string)
-	stringMap["start_date"] = sd
-	stringMap["end_date"] = ed
-
-	data := make(map[string]interface{})
-	data["reservation"] = res
-
-	render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
-		Form:      forms.New(nil),
-		Data:      data,
-		StringMap: stringMap,
-	})
-}
-
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
 	if !ok {
-		helpers.ServerError(w, errors.New("can't get from session"))
+		m.App.Session.Put(r.Context(), "error", "can't get from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
 	err := r.ParseForm()
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "error parsing form")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -208,6 +219,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
 
+		w.WriteHeader(http.StatusSeeOther)
 		render.Template(w, r, "make-reservation.page.tmpl", &models.TemplateData{
 			Form: form,
 			Data: data,
@@ -217,7 +229,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	newReservationID, err := m.DB.InsertReservation(reservation)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "error inserting reservation")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
@@ -233,7 +246,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 
 	err = m.DB.InsertRoomRestriction(restriction)
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "error inserting room_restriction")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
