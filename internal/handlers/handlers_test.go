@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -188,6 +189,24 @@ func TestRepository_PostReservation(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 	if rr.Code != http.StatusTemporaryRedirect {
 		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	}
+}
+
+func TestRepository_AvailabilityJSON(t *testing.T) {
+	reqBody := "start=2050-01-01"
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "end=2050-01-02")
+	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+	req, _ := http.NewRequest("POST", "/search-availability-json", strings.NewReader(reqBody))
+	ctx := getCtx(req)
+	req = req.WithContext(ctx)
+	req.Header.Set("Content-Type", "x-www-form-urlencoded")
+	handler := http.HandlerFunc(Repo.AvailabilityJSON)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	var j jsonResponse
+	err := json.Unmarshal(rr.Body.Bytes(), &j)
+	if err != nil {
+		t.Error("failed to parse json")
 	}
 }
 
