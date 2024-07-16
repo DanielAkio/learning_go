@@ -3,10 +3,10 @@ package handlers
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -90,18 +90,19 @@ func TestRepository_Reservation(t *testing.T) {
 }
 
 func TestRepository_PostReservation(t *testing.T) {
-	reqBody := "start_date=2050-01-01"
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=123456789")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+	postData := url.Values{}
+	postData.Add("start_date", "2050-01-01")
+	postData.Add("end_date", "2050-01-02")
+	postData.Add("first_name", "John")
+	postData.Add("last_name", "Smith")
+	postData.Add("email", "john@smith.com")
+	postData.Add("phone", "123456789")
+	postData.Add("room_id", "1")
 	reservation := models.Reservation{
 		RoomID: 1,
 		Room:   models.Room{ID: 1, Name: "General's Quarters"},
 	}
-	req, _ := http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	req, _ := http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	ctx := getCtx(req)
 	session.Put(ctx, "reservation", reservation)
 	req = req.WithContext(ctx)
@@ -113,7 +114,7 @@ func TestRepository_PostReservation(t *testing.T) {
 		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
-	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	ctx = getCtx(req)
 	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -136,8 +137,9 @@ func TestRepository_PostReservation(t *testing.T) {
 		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
 	}
 
-	reqBody = "start_date=2050-01-01"
-	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	postData = url.Values{}
+	postData.Add("start_date", "2050-01-01")
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	ctx = getCtx(req)
 	session.Put(ctx, "reservation", reservation)
 	req = req.WithContext(ctx)
@@ -149,14 +151,15 @@ func TestRepository_PostReservation(t *testing.T) {
 		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
-	reqBody = "start_date=2050-01-01"
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=Fail")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=123456789")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
-	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	postData = url.Values{}
+	postData.Add("start_date", "2050-01-01")
+	postData.Add("end_date", "2050-01-02")
+	postData.Add("first_name", "Fail")
+	postData.Add("last_name", "Smith")
+	postData.Add("email", "john@smith.com")
+	postData.Add("phone", "123456789")
+	postData.Add("room_id", "1")
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	ctx = getCtx(req)
 	session.Put(ctx, "reservation", reservation)
 	req = req.WithContext(ctx)
@@ -168,18 +171,19 @@ func TestRepository_PostReservation(t *testing.T) {
 		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
 	}
 
-	reqBody = "start_date=2050-01-01"
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "end_date=2050-01-02")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "first_name=John")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "last_name=Smith")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "email=john@smith.com")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "phone=123456789")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
+	postData = url.Values{}
+	postData.Add("start_date", "2050-01-01")
+	postData.Add("end_date", "2050-01-02")
+	postData.Add("first_name", "John")
+	postData.Add("last_name", "Smith")
+	postData.Add("email", "john@smith.com")
+	postData.Add("phone", "123456789")
+	postData.Add("room_id", "1")
 	reservation = models.Reservation{
 		RoomID: 100,
 		Room:   models.Room{ID: 1, Name: "General's Quarters"},
 	}
-	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(reqBody))
+	req, _ = http.NewRequest("POST", "/make-reservation", strings.NewReader(postData.Encode()))
 	ctx = getCtx(req)
 	session.Put(ctx, "reservation", reservation)
 	req = req.WithContext(ctx)
@@ -193,10 +197,11 @@ func TestRepository_PostReservation(t *testing.T) {
 }
 
 func TestRepository_AvailabilityJSON(t *testing.T) {
-	reqBody := "start=2050-01-01"
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "end=2050-01-02")
-	reqBody = fmt.Sprintf("%s&%s", reqBody, "room_id=1")
-	req, _ := http.NewRequest("POST", "/search-availability-json", strings.NewReader(reqBody))
+	postData := url.Values{}
+	postData.Add("start_date", "2050-01-01")
+	postData.Add("end_date", "2050-01-02")
+	postData.Add("room_id", "1")
+	req, _ := http.NewRequest("POST", "/search-availability-json", strings.NewReader(postData.Encode()))
 	ctx := getCtx(req)
 	req = req.WithContext(ctx)
 	req.Header.Set("Content-Type", "x-www-form-urlencoded")

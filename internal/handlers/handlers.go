@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/DanielAkio/learning_go/driver"
@@ -16,7 +17,6 @@ import (
 	"github.com/DanielAkio/learning_go/internal/render"
 	"github.com/DanielAkio/learning_go/internal/repository"
 	"github.com/DanielAkio/learning_go/internal/repository/dbrepo"
-	"github.com/go-chi/chi"
 )
 
 var Repo *Repository
@@ -302,9 +302,11 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 }
 
 func (m *Repository) ChooseRoom(w http.ResponseWriter, r *http.Request) {
-	roomID, err := strconv.Atoi(chi.URLParam(r, "id"))
+	exploded := strings.Split(r.RequestURI, "/")
+	roomID, err := strconv.Atoi(exploded[2])
 	if err != nil {
-		helpers.ServerError(w, err)
+		m.App.Session.Put(r.Context(), "error", "missing url parameter")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
 
