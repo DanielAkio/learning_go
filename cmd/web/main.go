@@ -31,6 +31,9 @@ func main() {
 	}
 	defer db.SQL.Close()
 
+	defer close(app.MailChan)
+	listenForMail()
+
 	fmt.Printf("Starting application on localhost:%s\n\n", portNumber)
 	srv := &http.Server{
 		Addr:    ":" + portNumber,
@@ -46,6 +49,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.Restriction{})
 	gob.Register(models.Reservation{})
 	gob.Register(models.RoomRestriction{})
+
+	MailChan := make(chan models.MailData)
+	app.MailChan = MailChan
 
 	app.InProduction = false
 
