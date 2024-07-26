@@ -15,3 +15,6 @@ VALUES ('Daniel', 'Akio', 'danielakioteixeira@gmail.com', '56612347', '2024-01-0
 
 INSERT INTO room_restrictions (start_date, end_date, room_id, reservation_id, restriction_id, created_at, updated_at)
 VALUES ('2024-07-01', '2024-07-31', '1', '1', '1', '2024-01-01', '2024-01-01');
+
+INSERT INTO users (first_name, last_name, email, password, access_level, created_at, updated_at)
+VALUES ('Daniel', 'Akio', 'admin@admin.com', '$2a$12$0GYloLnPl6o9sIYCCA0BjuvKOH0roD1fBGkIQAgkylDMlSEIjTI8.', '3', '2024-01-01', '2024-01-01');
