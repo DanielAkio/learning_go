@@ -1,9 +1,7 @@
 # Bookings and Reservations
-
 This is the repository for my bookings and reservations project.
 
 ## Prerequisites
-
 - Golang
  - buffalo soda
 - Docker
@@ -22,7 +20,6 @@ This is the repository for my bookings and reservations project.
 - ```go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out``` coverage all files
 
 ## Running Local
-
 - Git Bash
   - `./run.sh`
 - Powershell

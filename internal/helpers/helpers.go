@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"runtime/debug"
+	"time"
 
 	"github.com/DanielAkio/learning_go/internal/config"
 )
@@ -28,4 +29,8 @@ func ServerError(w http.ResponseWriter, err error) {
 func IsAuthenticated(r *http.Request) bool {
 	exists := app.Session.Exists(r.Context(), "user_id")
 	return exists
+}
+
+func HumanDate(t time.Time) string {
+	return t.Format("2006-01-02")
 }
