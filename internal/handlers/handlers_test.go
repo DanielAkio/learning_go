@@ -73,8 +73,8 @@ func TestRepository_Reservation(t *testing.T) {
 	req = req.WithContext(ctx)
 	rr = httptest.NewRecorder()
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("Reservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("Reservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
 	req, _ = http.NewRequest("GET", "/make-reservation", nil)
@@ -84,8 +84,8 @@ func TestRepository_Reservation(t *testing.T) {
 	reservation.RoomID = 100
 	session.Put(ctx, "reservation", reservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("Reservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("Reservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 }
 
@@ -121,8 +121,8 @@ func TestRepository_PostReservation(t *testing.T) {
 	rr = httptest.NewRecorder()
 	handler = http.HandlerFunc(Repo.PostReservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
 	req, _ = http.NewRequest("POST", "/make-reservation", nil)
@@ -133,8 +133,8 @@ func TestRepository_PostReservation(t *testing.T) {
 	rr = httptest.NewRecorder()
 	handler = http.HandlerFunc(Repo.PostReservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
 	postData = url.Values{}
@@ -167,8 +167,8 @@ func TestRepository_PostReservation(t *testing.T) {
 	rr = httptest.NewRecorder()
 	handler = http.HandlerFunc(Repo.PostReservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 
 	postData = url.Values{}
@@ -191,8 +191,8 @@ func TestRepository_PostReservation(t *testing.T) {
 	rr = httptest.NewRecorder()
 	handler = http.HandlerFunc(Repo.PostReservation)
 	handler.ServeHTTP(rr, req)
-	if rr.Code != http.StatusTemporaryRedirect {
-		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusTemporaryRedirect)
+	if rr.Code != http.StatusSeeOther {
+		t.Errorf("PostReservation handler returned %d but expected %d", rr.Code, http.StatusSeeOther)
 	}
 }
 

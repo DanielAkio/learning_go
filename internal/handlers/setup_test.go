@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/DanielAkio/learning_go/internal/config"
+	"github.com/DanielAkio/learning_go/internal/helpers"
 	"github.com/DanielAkio/learning_go/internal/models"
 	"github.com/DanielAkio/learning_go/internal/render"
 	"github.com/alexedwards/scs/v2"
@@ -27,7 +28,12 @@ var errorLog *log.Logger
 var pathToTemplates = "./../../templates"
 
 func TestMain(m *testing.M) {
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
 	gob.Register(models.Reservation{})
+	gob.Register(models.RoomRestriction{})
+	gob.Register(map[string]int{})
 
 	app.InProduction = false
 
@@ -117,6 +123,13 @@ func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
 }
 
+var functions = template.FuncMap{
+	"humanDate":  helpers.HumanDate,
+	"formatDate": helpers.FormatDate,
+	"iterate":    helpers.Iterate,
+	"add":        helpers.Add,
+}
+
 func CreateTestTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 
@@ -127,7 +140,7 @@ func CreateTestTemplateCache() (map[string]*template.Template, error) {
 
 	for _, page := range pages {
 		name := filepath.Base(page)
-		ts, err := template.New(name).ParseFiles(page)
+		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
 		if err != nil {
 			return myCache, err
 		}
