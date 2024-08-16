@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/gob"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -51,10 +52,26 @@ func run() (*driver.DB, error) {
 	gob.Register(models.RoomRestriction{})
 	gob.Register(map[string]int{})
 
+	inProduction := flag.Bool("production", false, "Application is in production")
+	useCache := flag.Bool("cache", true, "Use template cache")
+	dbName := flag.String("dbname", "bookings", "Database name")
+	dbUser := flag.String("dbuser", "", "Database user")
+	dbPass := flag.String("dbpass", "", "Database password")
+	dbHost := flag.String("dbhost", "localhost", "Database host")
+	dbPort := flag.String("dbport", "5432", "Database port")
+	dbSsl := flag.String("dbssl", "disable", "Database ssl settings")
+	flag.Parse()
+
+	if *dbUser == "" || *dbPass == "" {
+		fmt.Println("Missing required flags")
+		os.Exit(1)
+	}
+
+	app.InProduction = *inProduction
+	app.UseCache = *useCache
+
 	MailChan := make(chan models.MailData)
 	app.MailChan = MailChan
-
-	app.InProduction = false
 
 	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
@@ -70,7 +87,8 @@ func run() (*driver.DB, error) {
 	app.Session = session
 
 	log.Println("Connection to database...")
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=admin password=admin")
+	connectionString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=%s", *dbHost, *dbPort, *dbName, *dbUser, *dbPass, *dbSsl)
+	db, err := driver.ConnectSQL(connectionString)
 	if err != nil {
 		log.Fatal("cannot connect to database! Dying...")
 	}
@@ -83,7 +101,6 @@ func run() (*driver.DB, error) {
 	}
 
 	app.TemplateCache = tc
-	app.UseCache = false
 
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
