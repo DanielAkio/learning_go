@@ -16,6 +16,8 @@
 
         <form action="/admin/reservation/{{$src}}/{{$res.ID}}" method="post" class="" novalidate>
             <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+            <input type="hidden" name="year" value="{{index .StringMap "year"}}">
+            <input type="hidden" name="month" value="{{index .StringMap "month"}}">
 
             <div class="row mt-3">
                 <div class="col-6">
@@ -48,10 +50,21 @@
                     required>
             </div>
             <hr>
-            <input type="submit" class="btn btn-primary" value="Save">
-            <a class="btn btn-warning" href="/admin/reservations-{{$src}}">Cancel</a>
-            <a class="btn btn-info" href="#!" onclick="processRes({{$res.ID}})">Mark as Processed</a>
-            <a class="btn btn-danger" href="#!" onclick="deleteRes({{$res.ID}})">Delete</a>
+            <div class="float-left">
+                <input type="submit" class="btn btn-primary" value="Save">
+                {{if eq $src "cal"}}
+                    <a class="btn btn-warning" href="#!" onclick="window.history.go(-1)">Cancel</a>
+                {{else}}
+                    <a class="btn btn-warning" href="/admin/reservations-{{$src}}">Cancel</a>
+                {{end}}
+                {{if eq $res.Processed 0}}
+                    <a class="btn btn-info" href="#!" onclick="processRes({{$res.ID}})">Mark as Processed</a>
+                {{end}}
+            </div>
+            <div class="float-right">
+                <a class="btn btn-danger" href="#!" onclick="deleteRes({{$res.ID}})">Delete</a>
+            </div>
+            <div class="clearfix"></div>
         </form>
     </div>
 {{end}}
@@ -65,7 +78,7 @@
                 msg: 'Are you sure?',
                 callback: function(result) {
                     if (result !== false) {
-                        window.location.href = "/admin/process-reservation/{{$src}}/" + id;
+                        window.location.href = "/admin/process-reservation/{{$src}}/" + id + "/do?y={{index .StringMap "year"}}&m={{index .StringMap "month"}}";
                     }
                 }
             })
@@ -77,7 +90,7 @@
                 msg: 'Are you sure?',
                 callback: function(result) {
                     if (result !== false) {
-                        window.location.href = "/admin/delete-reservation/{{$src}}/" + id;
+                        window.location.href = "/admin/delete-reservation/{{$src}}/" + id + "/do?y={{index .StringMap "year"}}&m={{index .StringMap "month"}}";
                     }
                 }
             })
